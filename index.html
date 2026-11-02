@@ -18,6 +18,8 @@ header{padding-bottom:12px}main{padding-top:calc(12px + env(safe-area-inset-top)
 
 main{padding-bottom:calc(130px + env(safe-area-inset-bottom))}.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:10;background:var(--paper);border-top:var(--edge);padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));display:flex;justify-content:center;gap:10px}.tab-bar button{flex:1;max-width:230px;min-width:0;min-height:60px;padding:8px 4px;background:#fff;font-size:18px}.tab-bar button[aria-selected="true"]{background:var(--yellow);box-shadow:3px 3px 0 var(--ink);transform:translateY(-3px)}[role="tabpanel"]:focus-visible{outline:4px solid #2775bc;outline-offset:4px}.outing{background:#eaf8e0}.outing ul{padding-left:24px;margin:0}.outing li{margin:8px 0;font-size:16px;overflow-wrap:anywhere}
 .location-actions,.traffic-scope{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.location-actions button{flex:1}.location-note{font-size:15px}.journey-row.relevant{background:#fff1af;border-radius:12px;padding:12px}.traffic-scope button[aria-pressed="true"]{background:#cdeefd}
+
+.road-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:2px solid var(--ink);border-radius:16px;padding:12px;margin:10px 0;background:#fff}.road-row.relevant{box-shadow:3px 3px 0 var(--ink)}.road-row small{display:block;font-size:13px}.road-reading{flex-shrink:0;text-align:right;font-size:15px}.road-reading strong{display:block;font-size:21px}.road-green{background:#e3f6d7}.road-yellow{background:#fff1af}.road-red{background:#ffe3d9}.road-unknown{background:#eef0f2}#roads-error{margin:12px 0}#roads-error button{margin:8px 0 0}.roads-card h2{font-size:22px}
 </style>
 </head>
 <body>
@@ -32,7 +34,7 @@ main{padding-bottom:calc(130px + env(safe-area-inset-bottom))}.tab-bar{position:
 <div id="panel-weather" role="tabpanel" aria-labelledby="tab-weather" tabindex="0" hidden>
 <section class="card warning" aria-labelledby="warning-heading"><h2 id="warning-heading">📣 生效中警告</h2><div id="warnings">正在查詢警告狀態…</div><div id="warning-time" class="timestamp"></div></section><section class="card current observations" aria-labelledby="now-heading"><div class="topline"><h2 id="now-heading">📍 各區實時觀測</h2><span class="pill">香港 HKT</span></div><div class="hero"><div><div id="temp" class="temperature">—<small>°C</small></div><div id="station" class="station">香港天文台</div></div><span id="current-icon" class="big-icon" role="img" aria-label="天氣">🌤️</span></div><p id="hko-temp" class="station">天文台站：等待資料</p><div class="metrics"><div class="metric"><span>💧 相對濕度 · 天文台</span><strong id="humidity">—</strong></div><div class="metric"><span>☀️ 紫外線指數 · 京士柏</span><strong id="uv">—</strong><span id="uv-desc">等待資料</span></div></div><div class="station-control"><label for="district">📍 揀個地區觀測站</label><select id="district" disabled><option>香港天文台</option></select></div><div id="now-time" class="timestamp">更新時間：等待資料</div></section><section class="card forecast-section" aria-labelledby="forecast-heading"><h2 id="forecast-heading">🗓️ 未來九日小預告</h2><p class="muted">降雨概率按天文台提供嘅級別顯示。</p><p id="forecast-general" class="section-text"></p><div id="forecasts" class="forecast-list">正在載入九天預報…</div><div id="forecast-time" class="timestamp"></div></section></div>
 <div id="panel-traffic" role="tabpanel" aria-labelledby="tab-traffic" tabindex="0" hidden>
-<section class="card traffic" aria-labelledby="traffic-heading"><h2 id="traffic-heading">🚗 交通情況</h2><h3>你區相關</h3><div id="local-traffic">揀地區後睇相關交通。</div><div class="traffic-scope" role="group" aria-label="交通消息範圍"><button id="scope-local" type="button" aria-pressed="true">你區相關</button><button id="scope-all" type="button" aria-pressed="false">全部交通</button></div><div id="all-traffic" hidden><h3>全部特別交通消息</h3><div id="traffic-news">正在查詢交通消息…</div><button id="traffic-more" type="button" aria-controls="traffic-news" aria-expanded="false" hidden>睇更多消息</button></div><div id="traffic-time" class="timestamp"></div><h3>隧道行車時間</h3><p class="muted">由下列起點顯示器至目的地嘅估計行車時間，唔係淨計隧道內車程。</p><div id="journey-times">正在查詢行車時間…</div><div id="journey-time" class="timestamp"></div><p class="muted">資料來源：<a href="https://www.td.gov.hk/tc/" target="_blank" rel="noopener noreferrer">運輸署</a> / <a href="https://data.gov.hk/tc-data/dataset/hk-td-sm_8-journey-time-indicators-v2" target="_blank" rel="noopener noreferrer">data.gov.hk</a></p></section></div>
+<section class="card traffic roads-card" aria-labelledby="roads-heading"><h2 id="roads-heading">🛣️ 主要道路狀況</h2><p id="roads-scope" class="muted">全港主要道路</p><button id="roads-toggle" type="button" aria-pressed="false" aria-controls="road-conditions" hidden>睇全部道路</button><div id="roads-error" class="error" role="status" hidden><span id="roads-error-message"></span><button id="roads-retry" type="button">↻ 重試道路資料</button></div><div id="road-conditions" aria-live="polite">開交通頁時載入道路速度…</div><div id="roads-time" class="timestamp">更新時間：等待資料</div><p class="muted">最新 30 秒時段有車流嘅有效車道速度，按車流量加權平均；只代表已覆蓋偵測點，唔係全條路車程。冇有效讀數唔會當暢順。新界環迴公路以各段路名顯示；青嶼幹線、屯赤隧道等未有本來源可用對照嘅道路暫不顯示。</p><details><summary>速度顏色點樣分？</summary><p class="muted">沿用運輸署舊版速度圖分界：🔴 擠塞 &lt;15、🟡 緩慢 15–&lt;30、🟢 暢順 ≥30 km/h；並非現行高速公路官方擠塞評級，平均值亦可能掩蓋局部擠塞。<a href="https://www.td.gov.hk/en/publications_and_press_releases/press_releases/transport_department/index_id_1253.html" target="_blank" rel="noopener noreferrer">分界出處（2008）</a></p></details><p class="muted">資料來源：<a href="https://www.td.gov.hk/tc/" target="_blank" rel="noopener noreferrer">運輸署</a> / <a href="https://data.gov.hk/tc-data/dataset/hk-td-sm_4-traffic-data-strategic-major-roads" target="_blank" rel="noopener noreferrer">data.gov.hk</a>。道路及方向對照：每次更新同步讀取官方偵測器位置表。</p></section><section class="card traffic" aria-labelledby="traffic-heading"><h2 id="traffic-heading">🚗 交通情況</h2><h3>你區相關</h3><div id="local-traffic">揀地區後睇相關交通。</div><div class="traffic-scope" role="group" aria-label="交通消息範圍"><button id="scope-local" type="button" aria-pressed="true">你區相關</button><button id="scope-all" type="button" aria-pressed="false">全部交通</button></div><div id="all-traffic" hidden><h3>全部特別交通消息</h3><div id="traffic-news">正在查詢交通消息…</div><button id="traffic-more" type="button" aria-controls="traffic-news" aria-expanded="false" hidden>睇更多消息</button></div><div id="traffic-time" class="timestamp"></div><h3>隧道行車時間</h3><p class="muted">由下列起點顯示器至目的地嘅估計行車時間，唔係淨計隧道內車程。</p><div id="journey-times">正在查詢行車時間…</div><div id="journey-time" class="timestamp"></div><p class="muted">資料來源：<a href="https://www.td.gov.hk/tc/" target="_blank" rel="noopener noreferrer">運輸署</a> / <a href="https://data.gov.hk/tc-data/dataset/hk-td-sm_8-journey-time-indicators-v2" target="_blank" rel="noopener noreferrer">data.gov.hk</a></p></section></div>
 <aside id="install-hint" class="card install-hint" hidden aria-label="加至主畫面提示">📲 想一撳就睇天氣？喺 Safari 撳「分享」<span aria-hidden="true"> ↑ </span>，再揀「加至主畫面」。<button id="dismiss-install" type="button" aria-label="關閉加至主畫面提示">×</button></aside>
 <footer>資料來源：<a href="https://www.hko.gov.hk/tc/" target="_blank" rel="noopener noreferrer">香港天文台</a> Open Data<br>時間均為香港時間（UTC+8）・出門記得望下天！</footer>
 </main>
@@ -49,6 +51,7 @@ function selectTab(name,focus=false){
  if(!tabNames.includes(name))name='out';
  tabNames.forEach(key=>{const active=key===name;const tab=$('tab-'+key);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;$('panel-'+key).hidden=!active;});
  if(focus)$('tab-'+name).focus();
+ if(name==='traffic'&&!roadsRequested)void loadRoads();
 }
 function tabFromHash(){selectTab(location.hash.slice(1));}
 tabNames.forEach((name,index)=>{
@@ -57,7 +60,6 @@ tabNames.forEach((name,index)=>{
  $('tab-'+name).addEventListener('keydown',event=>{let next;if(event.key==='ArrowRight')next=(index+1)%3;else if(event.key==='ArrowLeft')next=(index+2)%3;else if(event.key==='Home')next=0;else if(event.key==='End')next=2;else return;event.preventDefault();activate(tabNames[next]);});
 });
 window.addEventListener('hashchange',tabFromHash);
-tabFromHash();
 const liveData={},feedState={};
 // Approximate area centroids; station coordinates below also support missing-station fallback.
 const areas=[
@@ -94,7 +96,7 @@ $('location-prompt').hidden=locationSeen||locationDeclined||!!area;if(area)$('lo
 function areaStation(){if(!area)return temperatures.find(t=>t.place==='香港天文台')?.place||temperatures[0]?.place||'香港天文台';const preferred=area.stations.find(s=>temperatures.some(t=>t.place===s));if(preferred)return preferred;return temperatures.filter(t=>stationCoords[t.place]).sort((a,b)=>distance(area.lat,area.lon,...stationCoords[a.place])-distance(area.lat,area.lon,...stationCoords[b.place]))[0]?.place||'香港天文台';}
 function localRain(){const r=liveData.rhrread?.rainfall;const entry=r?.data?.find(r=>r.place===area?.rain);return entry&&Number.isFinite(Number(entry.max))&&entry.max!=null?`${area.name}過去一小時最高雨量：${entry.max} 毫米（${time(r.startTime)}–${time(r.endTime)}）`:area?`${area.name}過去一小時雨量：暫無資料`:'揀地區後睇過去一小時雨量。';}
 function renderLocalWeather(){const station=areaStation(),item=temperatures.find(t=>t.place===station);$('local-heading').textContent='📍 '+(area?.name||'香港天文台／全港');$('local-temp').replaceChildren(document.createTextNode(item?.value??'—'),Object.assign(document.createElement('small'),{textContent:'°C'}));$('local-station').textContent='觀測站：'+station;$('local-rain').textContent=localRain();$('local-time').textContent=liveData.rhrread?'更新時間：'+time(liveData.rhrread.updateTime):'等待觀測資料';}
-function changeArea(value){area=areas.find(a=>a.name===value)||null;$('area').value=area?.name||'';locationSeen=true;$('location-prompt').hidden=true;saveLocation();selected=areaStation();if(temperatures.length){$('district').value=selected;renderTemperature();}renderLocalWeather();renderLocalTraffic();renderOuting();if(liveData.journey)renderJourneys(liveData.journey);}
+function changeArea(value){area=areas.find(a=>a.name===value)||null;$('area').value=area?.name||'';locationSeen=true;$('location-prompt').hidden=true;saveLocation();selected=areaStation();if(temperatures.length){$('district').value=selected;renderTemperature();}renderLocalWeather();renderLocalTraffic();renderOuting();renderRoads();if(liveData.journey)renderJourneys(liveData.journey);}
 $('area').addEventListener('change',e=>{changeArea(e.target.value);$('location-status').textContent=area?`已揀${area.name}，隨時可以再改。`:'而家睇香港天文台／全港資料。';});
 function locate(){locationSeen=true;$('location-prompt').hidden=true;saveLocation();if(!navigator.geolocation){$('location-status').textContent='呢個瀏覽器用唔到定位，請喺上面揀地區。';return;}$('locate').disabled=true;$('location-status').textContent='正在搵你附近嘅地區…';navigator.geolocation.getCurrentPosition(pos=>{$('locate').disabled=false;const {latitude:lat,longitude:lon}=pos.coords;if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<22.15||lat>22.57||lon<113.83||lon>114.45){$('location-status').textContent='位置似乎喺香港以外，保留而家嘅選擇；你可以手動揀地區。';return;}const nearest=[...areas].sort((a,b)=>distance(lat,lon,a.lat,a.lon)-distance(lat,lon,b.lat,b.lon))[0];locationDeclined=false;changeArea(nearest.name);$('location-status').textContent=`已揀附近嘅${nearest.name}，唔啱可以手動改。`;},error=>{$('locate').disabled=false;locationDeclined=error.code===1;saveLocation();$('location-status').textContent=error.code===1?'未獲准用位置，冇問題！請喺上面揀地區。':'暫時搵唔到位置，請手動揀地區，或者再試一次。';},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});}
 $('locate').addEventListener('click',locate);$('prompt-locate').addEventListener('click',locate);$('decline-location').addEventListener('click',()=>{locationSeen=true;locationDeclined=true;saveLocation();$('location-prompt').hidden=true;$('location-status').textContent='冇問題！你可以喺上面揀地區。';});
@@ -160,9 +162,106 @@ function renderJourneys(doc){
  row.append(name,duration);return row;
  }));if(!visibleRoutes.length)put('journey-times',area?'現有行車時間來源暫冇你區相關路線；撳「全部交通」睇其他路線。':'揀地區，或者撳「全部交通」睇行車時間。');trafficStamp('journey-time',dates);
 }
+// Both URLs return Access-Control-Allow-Origin: * for a GitHub Pages Origin.
+// Processed irnAvgSpeed-all.xml was investigated: its companion speed_segments_info.csv
+// maps segments to route numbers, not individual Chinese road names or travel directions.
+const ROAD_URL='https://resource.data.one.gov.hk/td/traffic-detectors/rawSpeedVol-all.xml';
+const ROAD_LOCATIONS_URL='https://static.data.gov.hk/td/traffic-data-strategic-major-roads/info/traffic_speed_volume_occ_info.csv';
+const majorRoadNames='屯門公路 吐露港公路 北大嶼山公路 東區走廊 龍翔道 大老山公路 元朗公路 青朗公路 新田公路 粉嶺公路 港深西部公路 深圳灣公路大橋 青葵公路 荃灣路 觀塘繞道 西九龍公路 青山公路 屯門至赤鱲角連接路 屯赤隧道 大老山隧道 城門隧道 獅子山隧道公路 沙田路 馬鞍山繞道 粉嶺繞道 西九龍走廊 將軍澳隧道公路 將軍澳道 香港仔隧道 黃竹坑道 告士打道 干諾道西'.split(' ');
+// CSV includes a BOM and may contain quoted commas, escaped quotes and line breaks.
+function parseRoadLocations(text){
+ const records=[];let row=[],field='',quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+  if(c==='"'){if(quoted&&text[i+1]==='"'){field+='"';i++;}else quoted=!quoted;}
+  else if(!quoted&&(c===','||c==='\n')){row.push(field.replace(/\r$/,''));field='';if(c==='\n'){records.push(row);row=[];}}
+  else field+=c;
+ }
+ if(quoted)throw Error('道路位置 CSV 格式不符');
+ if(field||row.length){row.push(field.replace(/\r$/,''));records.push(row);}
+ const headers=(records.shift()||[]).map(h=>h.replace(/^\uFEFF/,'').trim()),idIndex=headers.indexOf('AID_ID_Number'),nameIndex=headers.indexOf('Road_TC');
+ if(idIndex<0||nameIndex<0)throw Error('道路位置欄位不符');
+ const groups=new Map();
+ for(const record of records){
+  const description=(record[nameIndex]||'').trim(),name=majorRoadNames.find(n=>description.startsWith(n)),id=(record[idIndex]||'').trim();
+  const direction=description.match(/[-－]\s*([東西南北]行)/)?.[1];
+  if(!name||!direction||!id)continue;
+  const key=name+'|'+direction;if(!groups.has(key))groups.set(key,{name,direction,ids:[]});groups.get(key).ids.push(id);
+ }
+ if(!groups.size)throw Error('缺少主要道路位置');
+ return [...groups.values()];
+}
+// Supplement existing traffic keywords with nearby strategic routes, without changing news matching.
+const areaRoads={'屯門':['屯門公路','元朗公路','青山公路','青朗公路'],'元朗':['元朗公路','青朗公路','新田公路','青山公路'],'天水圍':['元朗公路','新田公路','港深西部公路'],'荃灣':['屯門公路','荃灣路','青朗公路','城門隧道','青山公路'],'葵青':['青葵公路','西九龍公路','荃灣路'],'沙田':['吐露港公路','大老山公路','沙田路','馬鞍山繞道','獅子山隧道公路','城門隧道'],'大埔':['吐露港公路','粉嶺公路'],'北區':['粉嶺公路','粉嶺繞道','新田公路'],'黃大仙':['龍翔道','大老山隧道','獅子山隧道公路'],'深水埗':['龍翔道','西九龍公路','西九龍走廊'],'離島／大嶼山':['北大嶼山公路']};
+let roadsRequested=false,roadsAll=false,roadsData=null,roadsPending=null;
+function roadRelevant(name){return !!area&&(matchesArea(name)||(areaRoads[area.name]||[]).includes(name));}
+function roadBand(speed){return speed<15?'red':speed<30?'yellow':'green';}
+function parseRoads(doc,roadGroups){
+ const roadByDetector=new Map();roadGroups.forEach((g,i)=>g.ids.forEach(id=>roadByDetector.set(id,i)));
+ if(doc.documentElement.localName!=='raw_speed_volume_list')throw Error('道路資料格式不符');
+ const date=xmlValue(doc,'date'),periods=[...doc.getElementsByTagNameNS('*','period')];
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!periods.length)throw Error('缺少道路時段');
+ const period=periods.sort((a,b)=>xmlValue(b,'period_to').localeCompare(xmlValue(a,'period_to')))[0];
+ const end=xmlValue(period,'period_to');if(!/^\d{2}:\d{2}:\d{2}$/.test(end))throw Error('道路時間格式不符');
+ const totals=roadGroups.map(()=>({sum:0,volume:0,detectors:0}));let mapped=0;
+ for(const detector of period.getElementsByTagNameNS('*','detector')){
+  const index=roadByDetector.get(xmlValue(detector,'detector_id'));if(index===undefined)continue;mapped++;
+  const total=totals[index];let used=false;
+  for(const lane of detector.getElementsByTagNameNS('*','lane')){
+   const rawSpeed=xmlValue(lane,'speed'),rawVolume=xmlValue(lane,'volume'),speed=Number(rawSpeed),volume=Number(rawVolume);
+   if(xmlValue(lane,'valid')!=='Y'||!rawSpeed||!rawVolume||!Number.isFinite(speed)||speed<0||!Number.isFinite(volume)||volume<=0)continue;
+   total.sum+=speed*volume;total.volume+=volume;used=true;
+  }
+  if(used)total.detectors++;
+ }
+ if(!mapped)throw Error('缺少已知道路偵測器');
+ return {stamp:date+'T'+end+'+08:00',rows:totals.map((t,i)=>({...roadGroups[i],speed:t.volume?t.sum/t.volume:null,count:t.detectors}))};
+}
+function renderRoads(data){
+ if(data)roadsData=data;
+ $('roads-toggle').hidden=!area;$('roads-toggle').setAttribute('aria-pressed',String(roadsAll));put('roads-toggle',roadsAll?'只睇你區相關':'睇全部道路');
+ put('roads-scope',area?`${area.name}相關道路行先${roadsAll?' · 全港道路':' · 只睇你區'}`:'全港主要道路');
+ if(!roadsData)return;
+ const rows=roadsData.rows.filter(r=>!area||roadsAll||roadRelevant(r.name)).sort((a,b)=>Number(roadRelevant(b.name))-Number(roadRelevant(a.name))||a.name.localeCompare(b.name,'zh-HK')||a.direction.localeCompare(b.direction,'zh-HK'));
+ $('road-conditions').replaceChildren(...rows.map(r=>{
+  const band=r.speed===null?'unknown':roadBand(r.speed),row=document.createElement('div');row.className=`road-row road-${band}`+(roadRelevant(r.name)?' relevant':'');
+  const name=document.createElement('span');name.textContent=r.name;const direction=document.createElement('small');direction.textContent=r.direction+(roadRelevant(r.name)?' · 你區相關':'');name.append(direction);
+  const reading=document.createElement('span');reading.className='road-reading';const speed=document.createElement('strong');speed.textContent=r.speed===null?'— km/h':`${r.speed.toFixed(1)} km/h`;const label=document.createElement('span');label.textContent=({green:'🟢 暢順',yellow:'🟡 緩慢',red:'🔴 擠塞',unknown:'⚪ 暫無資料'})[band];const count=document.createElement('small');count.textContent=`${r.count} 個有效偵測點`;reading.append(speed,label,count);row.append(name,reading);return row;
+ }));
+ if(!rows.length)put('road-conditions','本來源暫冇你區相關道路；撳「睇全部道路」睇其他路線。');
+}
+async function loadRoads(){
+ if(roadsPending)return roadsPending;
+ roadsRequested=true;$('roads-retry').disabled=true;$('road-conditions').setAttribute('aria-busy','true');
+ roadsPending=(async()=>{try{
+  const data=await request('roads');renderRoads(data);feedState.roads='ready';$('roads-error').hidden=true;
+  put('roads-time',`資料時間：${time(data.stamp)}${Date.now()-Date.parse(data.stamp)>600000?' · ⚠️ 資料已超過 10 分鐘':''} · 查詢：${time(new Date().toISOString())}`);return true;
+ }catch{feedState.roads='failed';put('roads-error-message','⚠️ 無法更新道路狀況，請重試。'+(roadsData?'以下保留上次資料，請留意原有時間。':''));$('roads-error').hidden=false;if(!roadsData)put('road-conditions','暫時收唔到道路速度。');return false;
+ }finally{$('roads-retry').disabled=false;$('road-conditions').setAttribute('aria-busy','false');roadsPending=null;}})();
+ return roadsPending;
+}
+$('roads-toggle').addEventListener('click',()=>{roadsAll=!roadsAll;renderRoads();});
+$('roads-retry').addEventListener('click',()=>void loadRoads());
+
 const sections=[['rhrread','即時天氣',renderCurrent,'now-time'],['flw','天氣概況',renderOverview,'overview-time'],['fnd','九天預報',renderForecast,'forecast-time'],['warnsum','天氣警告',renderWarnings,'warning-time'],['traffic','特別交通消息',renderTraffic,'traffic-time'],['journey','行車時間',renderJourneys,'journey-time']];
-async function request(type){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),18000);try{const isTraffic=type==='traffic'||type==='journey';const url=isTraffic?TRAFFIC+(type==='traffic'?'tc/specialtrafficnews.xml':'jss/Journeytimev2.xml'):`${API}?dataType=${type}&lang=tc`;const response=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error(`HTTP ${response.status}`);if(!isTraffic)return await response.json();const xml=new DOMParser().parseFromString(await response.text(),'application/xml');if(xml.getElementsByTagNameNS('*','parsererror').length)throw Error('XML 格式不符');return xml;}finally{clearTimeout(timer);}}
-async function refresh(){if($('refresh').disabled)return;$('refresh').disabled=true;put('refresh','↻ 載入中');put('status','☁️ 正在接收天氣同交通消息…');$('error').hidden=true;$('retry').disabled=true;const results=await Promise.allSettled(sections.map(async([type,label,render,stamp])=>{try{const data=await request(type);render(data);liveData[type]=data;feedState[type]='ready';renderLocalWeather();renderLocalTraffic();renderOuting();}catch(error){feedState[type]='failed';renderLocalTraffic();renderOuting();put(stamp,'⚠️ 更新失敗；如有舊資料，請留意原有時間。');if(type==='traffic'&&$('traffic-news').textContent.includes('正在'))put('traffic-news','暫時收唔到交通消息。');if(type==='journey'&&$('journey-times').textContent.includes('正在'))put('journey-times','暫時收唔到行車時間。');if(type==='warnsum')put('warnings','暫時無法確認警告狀態，請到天文台查看最新消息。');if(type==='flw'&&$('description').textContent.includes('正在'))put('description','暫時收唔到天氣概況。');if(type==='fnd'&&$('forecasts').textContent.includes('正在'))put('forecasts','暫時收唔到九天預報。');throw new Error(label);}}));const failures=results.filter(r=>r.status==='rejected').map(r=>r.reason.message);if(failures.length){put('error-message',`☂️ 無法更新${failures.join('、')}。請檢查網絡，再撳「重試」。如有舊資料，請留意更新時間。`);$('error').hidden=false;put('status',failures.length===sections.length?'未能取得天氣同交通資料':'部分資料未能更新');}else put('status',`✓ 已更新 · ${time(new Date().toISOString())}`);$('retry').disabled=false;$('refresh').disabled=false;put('refresh','↻ 重新整理');}
+async function request(type){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),18000);
+ const fetchResponse=async url=>{
+  const response=await fetch(`${url}${url.includes('?')?'&':'?'}_=${Date.now()}`,{signal:controller.signal,cache:'no-store'});
+  if(!response.ok)throw Error(`HTTP ${response.status}`);return response;
+ };
+ const parseXML=text=>{const doc=new DOMParser().parseFromString(text,'application/xml');if(doc.getElementsByTagNameNS('*','parsererror').length)throw Error('XML 格式不符');return doc;};
+ try{
+  if(type==='roads'){
+   const [speeds,locations]=await Promise.all([ROAD_URL,ROAD_LOCATIONS_URL].map(async url=>(await fetchResponse(url)).text()));
+   return parseRoads(parseXML(speeds),parseRoadLocations(locations));
+  }
+  const isTraffic=type==='traffic'||type==='journey';
+  const url=isTraffic?TRAFFIC+(type==='traffic'?'tc/specialtrafficnews.xml':'jss/Journeytimev2.xml'):`${API}?dataType=${type}&lang=tc`;
+  const response=await fetchResponse(url);return isTraffic?parseXML(await response.text()):await response.json();
+ }finally{clearTimeout(timer);controller.abort();}
+}
+async function refresh(){if($('refresh').disabled)return;$('refresh').disabled=true;put('refresh','↻ 載入中');put('status','☁️ 正在接收天氣同交通消息…');$('error').hidden=true;$('retry').disabled=true;const activeSections=roadsRequested?[...sections,['roads','道路狀況']]:sections;const results=await Promise.allSettled(activeSections.map(async([type,label,render,stamp])=>{if(type==='roads'){if(!await loadRoads())throw Error(label);return;}try{const data=await request(type);render(data);liveData[type]=data;feedState[type]='ready';renderLocalWeather();renderLocalTraffic();renderOuting();}catch(error){feedState[type]='failed';renderLocalTraffic();renderOuting();put(stamp,'⚠️ 更新失敗；如有舊資料，請留意原有時間。');if(type==='traffic'&&$('traffic-news').textContent.includes('正在'))put('traffic-news','暫時收唔到交通消息。');if(type==='journey'&&$('journey-times').textContent.includes('正在'))put('journey-times','暫時收唔到行車時間。');if(type==='warnsum')put('warnings','暫時無法確認警告狀態，請到天文台查看最新消息。');if(type==='flw'&&$('description').textContent.includes('正在'))put('description','暫時收唔到天氣概況。');if(type==='fnd'&&$('forecasts').textContent.includes('正在'))put('forecasts','暫時收唔到九天預報。');throw new Error(label);}}));const failures=results.filter(r=>r.status==='rejected').map(r=>r.reason.message);if(failures.length){put('error-message',`☂️ 無法更新${failures.join('、')}。請檢查網絡，再撳「重試」。如有舊資料，請留意更新時間。`);$('error').hidden=false;put('status',failures.length===activeSections.length?'未能取得天氣同交通資料':'部分資料未能更新');}else put('status',`✓ 已更新 · ${time(new Date().toISOString())}`);$('retry').disabled=false;$('refresh').disabled=false;put('refresh','↻ 重新整理');}
 $('refresh').addEventListener('click',refresh);
 $('retry').addEventListener('click',refresh);
 let dismissed=false;try{dismissed=localStorage.getItem('hk-weather-install-dismissed')==='1';}catch{}
@@ -170,6 +269,8 @@ const iphone=/iPhone|iPod/.test(navigator.userAgent);
 $('install-hint').hidden=!iphone||navigator.standalone||window.matchMedia('(display-mode: standalone)').matches||dismissed;
 $('dismiss-install').addEventListener('click',()=>{$('install-hint').hidden=true;try{localStorage.setItem('hk-weather-install-dismissed','1');}catch{}});
 renderLocalWeather();
+renderRoads();
+tabFromHash();
 refresh();
 </script>
 </body>
